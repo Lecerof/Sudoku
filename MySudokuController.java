@@ -21,11 +21,16 @@ public class MySudokuController extends JPanel implements SudokuController, Acti
 	
 	public MySudokuController(SudokuModel model, JMenuBar menubar) {
 		menuBar = menubar;
-		menuBar.getComponents();
+		this.model = model;
+		
+		// create all button and such components
+		undo = new JButton("Undo");
+		redo = new JButton("Redo");
 		
 		JMenu fileMenu = new JMenu("File");
 		JMenu actionMenu = new JMenu("Action");
-		JMenuItem openMenuItem = new JMenuItem();
+		
+		JMenuItem openMenuItem = new JMenuItem("New/Open");
 		JMenuItem clearMenuItem = new JMenuItem("Clear");
 		JMenuItem saveMenuItem = new JMenuItem("Save");
 		JMenuItem exitMenuItem = new JMenuItem("Exit");
@@ -34,9 +39,13 @@ public class MySudokuController extends JPanel implements SudokuController, Acti
 		JMenuItem makeSolvableMenuItem = new JMenuItem("Make Solvable");
 		JMenuItem generateMenuItem = new JMenuItem("Generate new");
 		
+		// Add all the buttons to respective component
+		add(undo);
+		add(redo);
+		
 		menuBar.add(fileMenu);
 		menuBar.add(actionMenu);
-		actionMenu.setEnabled(false);
+		actionMenu.setEnabled(false); // nothing to solve if nothing is loaded
 
 		fileMenu.add(openMenuItem);
 		fileMenu.add(generateMenuItem);
@@ -48,36 +57,30 @@ public class MySudokuController extends JPanel implements SudokuController, Acti
 		actionMenu.add(testMenuItem);
 		actionMenu.add(makeSolvableMenuItem);
 
-		saveMenuItem.addActionListener(e -> save());
+		// Add all actionlisteners to the buttons/menus
+		undo.addActionListener(e -> ((MySudokuModel) model).undo());
+		redo.addActionListener(e -> ((MySudokuModel) model).redo());
+		
+		openMenuItem.addActionListener(e -> openFromFile());
 		generateMenuItem.addActionListener(e -> generate());
+		saveMenuItem.addActionListener(e -> save());
 		exitMenuItem.addActionListener(e -> System.exit(0));
+		
 		solveMenuItem.addActionListener(e -> model.solve());
 		testMenuItem.addActionListener(e -> JOptionPane.showMessageDialog(MySudokuController.this,
 												"From this point the sudoku has " + 
 												((MySudokuModel) model).uniqueSolutions() +
 												" solutions"));
-		
 		makeSolvableMenuItem.addActionListener(e -> ((MySudokuModel) model).makeSolvable());
-		
-		clearMenuItem.addActionListener(e ->  {
-			model.clear();
-			setActionEnabled(false);
-		});
+		clearMenuItem.addActionListener(e ->  {	model.clear();
+												setActionEnabled(false);
+												});
 
 		
-		OpenAction openAction = new OpenAction();
-		openMenuItem.setAction(openAction);
-
 		
-		undo = new JButton("Undo");
-		undo.addActionListener(e -> ((MySudokuModel) model).undo());
-		redo = new JButton("Redo");
-		redo.addActionListener(e -> ((MySudokuModel) model).redo());
 		
-		add(undo);
-		add(redo);
 		
-		this.model = model;
+		
 	}
 	
 	private void setActionEnabled(boolean a) {
@@ -98,15 +101,7 @@ public class MySudokuController extends JPanel implements SudokuController, Acti
 	@Override
 	public void actionPerformed(ActionEvent e) {}
 	
-	private class OpenAction extends AbstractAction {
-
-		public OpenAction() {
-			super("New from file");
-		}
-		
-		@Override
-		public void actionPerformed(ActionEvent e) {
-
+	private void openFromFile() {
 			JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
 			int res = fc.showOpenDialog(null);
 			if (res == JFileChooser.APPROVE_OPTION) {
@@ -148,9 +143,7 @@ public class MySudokuController extends JPanel implements SudokuController, Acti
 			
 		
 		}
-	}
 	
-
 	private void save() {
 		JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
 		int returnVal = fc.showSaveDialog(null);
@@ -167,6 +160,8 @@ public class MySudokuController extends JPanel implements SudokuController, Acti
         }
 	}
 	
-	private void generate() {}
+	private void generate() {
+		// TODO maybe some other time
+	}
 
 }
