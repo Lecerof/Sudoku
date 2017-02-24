@@ -63,6 +63,7 @@ public class MySudokuController extends JPanel implements SudokuController, Acti
 			model.clear();
 			setActionEnabled(false);
 		});
+
 		
 		OpenAction openAction = new OpenAction();
 		openMenuItem.setAction(openAction);
@@ -105,6 +106,7 @@ public class MySudokuController extends JPanel implements SudokuController, Acti
 		
 		@Override
 		public void actionPerformed(ActionEvent e) {
+
 			JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
 			int res = fc.showOpenDialog(null);
 			if (res == JFileChooser.APPROVE_OPTION) {
@@ -148,6 +150,7 @@ public class MySudokuController extends JPanel implements SudokuController, Acti
 		}
 	}
 	
+
 	private void save() {
 		JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
 		int returnVal = fc.showSaveDialog(null);
