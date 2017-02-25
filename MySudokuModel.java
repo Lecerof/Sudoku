@@ -21,10 +21,26 @@ public class MySudokuModel implements SudokuModel {
 		clear(); // Initiate to 0 explicitly
 	}
 	
+	/**
+	 * constructor for copying a MySudokuModel object
+	 * @param s the MySudokuModel to be copied
+	 */
 	public MySudokuModel(MySudokuModel s) {
 		sudoku = cpyArr(s.sudoku);
 	}
 	
+	/**
+	 * setboard
+	 * sets the sudoku on a specific index. It also adds it to the
+	 * history queue. Throws an exception if one tries to add an illegal
+	 * number to the sudoku, ie. a duplication of a number already existing
+	 * in a row, column or block
+	 * @param row the row index
+	 * @param col the column index
+	 * @param val value to be set
+	 * @throws IllegalArgumentException if one tries to put duplicate numbers
+	 * in the sudoku
+	 */
 	public void setBoard(int row, int col, int val) {
 		if (isLegal(row, col, val)) {
 			int oldVal = sudoku[row][col];
@@ -33,10 +49,14 @@ public class MySudokuModel implements SudokuModel {
 			moveHistoryBound = moveHistoryIndex;
 			pcs.fireIndexedPropertyChange("setBoard", (row*9+col), oldVal, val);
 		} else {
-			throw new IllegalArgumentException("Not allowed to put duplicate numbers in rows, columns or block");
+			throw new IllegalArgumentException("Not allowed to put duplicate"
+										+ "numbers in rows, columns or block");
 		}
 	}
 	
+	/**
+	 * 
+	 */
 	public void setBoard(String input) {
 		int[][] oldsud = cpyArr(sudoku);
 		String[] parts = input.split("\n");
@@ -61,6 +81,9 @@ public class MySudokuModel implements SudokuModel {
 		return sudoku[row][col];
 	}
 	
+	/**
+	 * 
+	 */
 	public String getBoard() {
 		String s = "";
 		for(int[] row : sudoku) {
@@ -72,7 +95,11 @@ public class MySudokuModel implements SudokuModel {
 		return s;
 	
 	}
-
+	
+	
+	/**
+	 * 
+	 */
 	public boolean isLegal(int row, int col, int val) {
 		if (val == 0 || val == sudoku[row][col]) {
 			return true;
@@ -88,6 +115,10 @@ public class MySudokuModel implements SudokuModel {
 		
 		
 	}
+	
+	/**
+	 * 
+	 */
 	public void clear() {
 		int[][] oldsud = new int[rows][cols];
 		counter = 0;
@@ -99,13 +130,19 @@ public class MySudokuModel implements SudokuModel {
 		}
 		clearHistory();
 		pcs.firePropertyChange("clear", oldsud, sudoku);;
-		// fire property change event
 	}
 	
-	/* private methods*/
-		
-	// extracts a block and puts it in an array of length 9.
+	/**
+	 * extractBlock
+	 * extracts a block from the sudoku and puts it in an array
+	 * if row or col is outside the sudoku boundaries it returns null
+	 * @param row the row index of the square contained by one block
+	 * @param col the column index of the square contained by one block
+	 * @return array with all the numbers contained by the block
+	 */
 	private int[] extractBlock(int row, int col) {
+		if (row < 0 || row >= rows || col < 0 || col >= cols)
+			return null;
 		int blockY = row/3;
 		int blockX = col/3;
 		int[] tmp = new int[9];
@@ -116,16 +153,31 @@ public class MySudokuModel implements SudokuModel {
 		}
 		return tmp;
 	}
-	// extracts a column
+	
+	/**
+	 * extractCol
+	 * extracts the entire column out of a sudoku and puts it in an array
+	 * if user tries to extract a column outside of the sudoku it returns
+	 * null instead
+	 * @param col the column to be extracted.
+	 * @return column as an array
+	 */
 	private int[] extractCol(int col) {
-		int[] tmp = new int[9];
+		if (col < 0 || col >= cols) return null;
+		int[] tmp = new int[rows];
 		for(int i = 0; i < 9; i++) {
 			tmp[i] = sudoku[i][col];
 		}
 		return tmp;
 	}
 	
-	// returns true if element is in the list
+	/**
+	 * isInArray
+	 * checks if a value is in an array
+	 * @param b the array to be checked
+	 * @param a the value you want to look for
+	 * @return boolean true if the element is in the array
+	 */
 	private boolean isInArray(int[] b, int a) {	
 		for (int i = 0; i < b.length; i++ ) {
 			if(b[i] == a) return true;
@@ -133,6 +185,12 @@ public class MySudokuModel implements SudokuModel {
 		return false;		
 	}
 	
+	/**
+	 * sumEmptyArray
+	 * counts all the zeros in an array
+	 * @param a
+	 * @return counted value
+	 */
 	private int sumEmptyArray(int[] a) {
 		int counter = 0;
 		for (int e: a) {
@@ -141,13 +199,27 @@ public class MySudokuModel implements SudokuModel {
 		return counter;
 	}
 	
+	/**
+	 * sumEmpty
+	 * sums the empy indexes in each row, column and block of the solution
+	 * @param row the row index
+	 * @param col the column index
+	 * @return sum of the amount of empty indexes
+	 */
 	private int sumEmpty(int row, int col) {
 		int sum = sumEmptyArray(sudoku[row]); 			// count the empty cells in the row
 		sum += sumEmptyArray(extractCol(col)); 			// count the empty cells in the column 
 		sum += sumEmptyArray(extractBlock(row, col)); 	// count the empty cell in the block
 		return sum;
 	}
-
+	
+	/**
+	 * solve
+	 * tries to solve a sudoku by using solveHelper. if there is a solution
+	 * it will set the sudoku to that solution and return true and fire
+	 * a propertychange.
+	 * @return boolean true if there is a solution
+	 */
 	public boolean solve() {
 		counter = 0;
 		if (solveHelper()) {
