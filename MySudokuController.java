@@ -1,19 +1,13 @@
-import java.awt.BorderLayout;
 import java.awt.event.*;
 import java.io.*;
-import java.nio.file.*;
-
-import javax.swing.AbstractAction;
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.*;
 
 
 public class MySudokuController extends JPanel implements SudokuController, ActionListener {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	JButton undo, redo;
 	SudokuModel model;
 	JMenuBar menuBar;

@@ -1,8 +1,6 @@
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.*;
-import java.util.*;
-import java.io.*;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
@@ -45,7 +43,7 @@ public class MySudokuView extends JPanel implements PropertyChangeListener, KeyL
 	}
 	
 	
-	class Square extends JTextField {
+	private class Square extends JTextField {
 		private int row,col;
 		
 		public Square() {}
@@ -82,7 +80,7 @@ public class MySudokuView extends JPanel implements PropertyChangeListener, KeyL
 					if (val != 0) {
 						ref.setText(Integer.toString(val));
 						ref.setEnabled(false);
-						ref.setBackground(Color.lightGray);
+						ref.setBackground(new Color(224, 224, 224));
 						ref.setBorder(BorderFactory.createRaisedBevelBorder());
 					} else {
 						ref.setText(null);

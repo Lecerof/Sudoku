@@ -1,30 +1,46 @@
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.util.InputMismatchException;
 import java.util.LinkedList;
 
 
 public class MySudokuModel implements SudokuModel {
-
+	
 	private int rows=9;
 	private int cols=9;
 	private int[][] sudoku = new int[rows][cols];
 	private MySudokuModel solvedSudoku;
 	private int counter = 0;
+	private boolean isSolvable = false;
 	
+	//  Instance variables related to the history function
 	private LinkedList<Move> moveHistory= new LinkedList<Move>();
 	private int moveHistoryIndex = 0; private int moveHistoryBound = 0;
 	
 	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	
+	
+	
+	
+	public MySudokuModel() {
+		clear(); // Initiate to 0 explicitly
+	}
+	
+	public MySudokuModel(MySudokuModel s) {
+		rows = s.rows;
+		cols = s.cols;
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
+				sudoku[i][j] = s.sudoku[i][j];
+			}
+		}
+	}
 	private class Move {
 		int row, col, val, oldVal;
 		public Move(int r, int c, int v, int oldV) {
 			row = r; col = c; val = v; oldVal = oldV;
 		}
 	}
+	
 	private void clearHistory() {
 		moveHistoryIndex = 0;
 		moveHistoryBound = 0;
@@ -35,12 +51,11 @@ public class MySudokuModel implements SudokuModel {
 		if (moveHistoryIndex == moveHistory.size()) {
 			moveHistory.add(m);
 		}
-		else {
+		else 
 			moveHistory.set(moveHistoryIndex, m);
-
-		}
-			moveHistoryIndex++;
+		moveHistoryIndex++;
 	}
+	
 	public void makeSolvable() {
 		moveHistoryBound--;
 		while(!isSolvable())
@@ -64,22 +79,6 @@ public class MySudokuModel implements SudokuModel {
 		pcs.fireIndexedPropertyChange("undo", (last.row*9+last.col), last.oldVal, last.val);
 		}
 	}
-	private boolean isSolvable = false;
-	
-	public MySudokuModel() {
-		clear(); // Initiate to 0 explicitly
-	}
-	
-	public MySudokuModel(MySudokuModel s) {
-		rows = s.rows;
-		cols = s.cols;
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0; j < cols; j++) {
-				sudoku[i][j] = s.sudoku[i][j];
-			}
-		}
-	}
-	
 	private int[][] cpyArr (int[][] m) {
 		int rows = m.length; int cols = m[0].length;
 		int[][] res = new int[rows][cols];
