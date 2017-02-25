@@ -2,8 +2,15 @@ import java.awt.event.*;
 import java.io.*;
 import javax.swing.*;
 
-
-public class MySudokuController extends JPanel implements SudokuController, ActionListener {
+/**
+ * Class MySudokuController
+ * deals with the communication between the view and the model
+ * 
+ * @author Jonas Lecerof
+ *
+ */
+public class MySudokuController extends JPanel
+				implements SudokuController,ActionListener {
 
 	private static final long serialVersionUID = 1L; // It complains otherwise
 	JButton undo, redo;
@@ -173,9 +180,9 @@ public class MySudokuController extends JPanel implements SudokuController, Acti
 	
 	/**
 	 * save
-	 * function for saving a sudoku. Before it saves it makes the puzzle solvable
-	 * so it will revert the model until its stage before a wrongly chosen input
-	 * was made.
+	 * function for saving a sudoku. Before it saves it makes the puzzle
+	 * solvable so it will revert the model until its stage before a wrongly
+	 * chosen input was made
 	 */
 	private void save() {
 		JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
@@ -188,13 +195,15 @@ public class MySudokuController extends JPanel implements SudokuController, Acti
             filewriter.write(model.getBoard());
             filewriter.close();
             } catch (IOException e1) {
-            	System.out.println("Something went wrong when saving");
+            	JOptionPane.showMessageDialog(MySudokuController.this,
+            						"Something went wrong when saving");
             }
         }
 	}
 	
 	private void generate() {
-		// TODO maybe some other time
+		JOptionPane.showMessageDialog(MySudokuController.this,
+				"TODO, sorry");
 	}
 
 }

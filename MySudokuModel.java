@@ -2,7 +2,12 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.LinkedList;
 
-
+/**
+ * Class MySudokuModel
+ * makes up the model of the sudoku
+ * @author Jonas Lecerof
+ *
+ */
 public class MySudokuModel implements SudokuModel {
 	
 	private int rows=9;

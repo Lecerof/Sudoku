@@ -6,7 +6,16 @@ import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.event.*;
 
-public class MySudokuView extends JPanel implements PropertyChangeListener, KeyListener {
+/**
+ * Class MySudokuView.
+ * Dealing with the visual of the sudoku
+ * 
+ * @author Jonas Lecerof
+ *
+ */
+public class MySudokuView extends JPanel
+				implements PropertyChangeListener, KeyListener {
+	
 	Square[][] playField = new Square[9][9];
 	SudokuModel model;
 	SudokuController controller;
