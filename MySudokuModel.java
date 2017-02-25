@@ -46,7 +46,7 @@ public class MySudokuModel implements SudokuModel {
 			int oldVal = sudoku[row][col];
 			sudoku[row][col] = val;
 			addHistory(new Move(row, col, val, oldVal));
-			moveHistoryBound = moveHistoryIndex;
+			moveHistoryBound = moveHistoryIndex; // this means that a value was added by user
 			pcs.fireIndexedPropertyChange("setBoard", (row*9+col), oldVal, val);
 		} else {
 			throw new IllegalArgumentException("Not allowed to put duplicate"
@@ -55,7 +55,12 @@ public class MySudokuModel implements SudokuModel {
 	}
 	
 	/**
-	 * 
+	 * setBoard
+	 * sets the sudoku from a string. If it is not a valid sudoku
+	 * it throws an IllegalArgumentException
+	 * @param input the string that are to be parsed to a sudoku
+	 * @throws IllegalArgumentException if the sudoku is not of
+	 * valid format
 	 */
 	public void setBoard(String input) {
 		int[][] oldsud = cpyArr(sudoku);
@@ -77,12 +82,26 @@ public class MySudokuModel implements SudokuModel {
 		pcs.firePropertyChange("setBoardStr", oldsud, sudoku);
 	}
 	
+	/**
+	 * getboard
+	 * gets the value of the square with given index as long as the
+	 * indexes are valid. Otherwise it returns 0
+	 * @param row rowindex of the value
+	 * @param col columnindex of the value
+	 * @return value of the square or 0 depending on if the indexes
+	 * are valid indexes for a sudoku puzzle
+	 */
 	public int getBoard(int row, int col) {
-		return sudoku[row][col];
+		int value = (row < 0 || row >= rows || col < 0 || col >= cols) ?
+													0 : sudoku[row][col];
+		return value;
 	}
 	
 	/**
-	 * 
+	 * getBoard
+	 * converts a board into a string where each row is ended by
+	 *  the newline sign
+	 *  @return string with a sudokuboard
 	 */
 	public String getBoard() {
 		String s = "";
@@ -98,7 +117,15 @@ public class MySudokuModel implements SudokuModel {
 	
 	
 	/**
-	 * 
+	 * isLegal
+	 * determines if a value is a legal value to put in the
+	 * sudoku. A value is legal if it is 0, the same value
+	 * as before or there is no occurance of it in a row
+	 * column or block.
+	 * @param row the row index of the value to be checked
+	 * @param col the column index of the value to be checked
+	 * @param val the integer value to be checked
+	 * @return boolean true if it is a legal option
 	 */
 	public boolean isLegal(int row, int col, int val) {
 		if (val == 0 || val == sudoku[row][col]) {
@@ -111,13 +138,12 @@ public class MySudokuModel implements SudokuModel {
 				return true;
 			}
 			return false;
-		}
-		
-		
+		}	
 	}
 	
 	/**
-	 * 
+	 * clear
+	 * clears the sudoku and the history and fires a propertychange
 	 */
 	public void clear() {
 		int[][] oldsud = new int[rows][cols];
