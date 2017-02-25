@@ -4,20 +4,24 @@ import javax.swing.*;
 
 
 public class MySudokuController extends JPanel implements SudokuController, ActionListener {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
+
+	private static final long serialVersionUID = 1L; // It complains otherwise
 	JButton undo, redo;
 	SudokuModel model;
 	JMenuBar menuBar;
 	
-	
+	/**
+	 * Constructor for creating a new MySudokuController object
+	 * @param model reference to the model that you want to use your
+	 * controller on
+	 * @param menubar reference to a JMenuBar that you want to attach
+	 * the JMenuItems from the constructor to
+	 */
 	public MySudokuController(SudokuModel model, JMenuBar menubar) {
 		menuBar = menubar;
 		this.model = model;
 		
-		// create all button and such components
+		// create all buttons/menuitems
 		undo = new JButton("Undo");
 		redo = new JButton("Redo");
 		
@@ -77,11 +81,24 @@ public class MySudokuController extends JPanel implements SudokuController, Acti
 		
 	}
 	
+	/**
+	 * setActionEnabled
+	 * function for setting the second item in the menu bar as enabled or disabled
+	 * @param a true is enabled, false is disabled
+	 */
 	private void setActionEnabled(boolean a) {
 		MySudokuController.this.menuBar.getMenu(1).setEnabled(a);
 	}
 	
-	
+	/**
+	 * input
+	 * function for putting a number from the view into the model.
+	 * @param row the row you want to set in the model
+	 * @param col the column you want to set int the model
+	 * @param value the value you want to set in the model.
+	 * @return boolean value that is true if setBoard was successful
+	 * and false if an exception was thrown by parseInt or setBoard.
+	 */
 	@Override
 	public boolean input(int row, int col, char value) {
 		try {
@@ -95,6 +112,18 @@ public class MySudokuController extends JPanel implements SudokuController, Acti
 	@Override
 	public void actionPerformed(ActionEvent e) {}
 	
+	
+	/**
+	 * openFromFile
+	 * function for dealing with opening a sudoku from a file.
+	 * Uses a JFileChooser and generates an appropriate message
+	 * if something goes wrong in either trying to open a file
+	 * or if something is wrong with the sudoku in the file.
+	 * 
+	 * Illegal sudokus will not be set in the model, but sudokus
+	 * with multiple solutions will. Clears the board and the model
+	 * if something goes wrong.
+	 */
 	private void openFromFile() {
 			JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
 			int res = fc.showOpenDialog(null);
@@ -107,9 +136,9 @@ public class MySudokuController extends JPanel implements SudokuController, Acti
 
 					 while (line != null) {
 					     sb.append(line);
-					     sb.append(System.lineSeparator());
-					     line = br.readLine();
-					 }
+					     sb.append(System.lineSeparator()); // Comment: If there is a better
+					     line = br.readLine();				// way to read from a file, please let
+					 }										// me know.
 					 br.close();
 					 String everything = sb.toString();
 					 model.clear();
@@ -118,19 +147,23 @@ public class MySudokuController extends JPanel implements SudokuController, Acti
 					 if (!model.isSolvable()) {
 						 model.clear();
 						 setActionEnabled(false);
-						 JOptionPane.showMessageDialog(MySudokuController.this, "No solutions");
+						 JOptionPane.showMessageDialog(MySudokuController.this,
+								 						"No solutions");
 					 }
 					 if (!model.isUnique())
-						 JOptionPane.showMessageDialog(MySudokuController.this, "No unique solution");
+						 JOptionPane.showMessageDialog(MySudokuController.this,
+								 						"No unique solution");
 					 
 				} catch (FileNotFoundException ex) {
-					JOptionPane.showMessageDialog(MySudokuController.this, "could not open file");
+					JOptionPane.showMessageDialog(MySudokuController.this,
+														"could not open file");
 				} catch (IOException exIO) {
 					System.out.println("Something went wrong in the filereader");
 				} catch (IllegalArgumentException exI) {
 					model.clear();
 					setActionEnabled(false);
-					JOptionPane.showMessageDialog(MySudokuController.this, "Illegal format on  sudoku");
+					JOptionPane.showMessageDialog(MySudokuController.this,
+														"Illegal format on  sudoku");
 				}
 				
 			}
@@ -138,6 +171,12 @@ public class MySudokuController extends JPanel implements SudokuController, Acti
 		
 		}
 	
+	/**
+	 * save
+	 * function for saving a sudoku. Before it saves it makes the puzzle solvable
+	 * so it will revert the model until its stage before a wrongly chosen input
+	 * was made.
+	 */
 	private void save() {
 		JFileChooser fc = new JFileChooser(System.getProperty("user.dir"));
 		int returnVal = fc.showSaveDialog(null);

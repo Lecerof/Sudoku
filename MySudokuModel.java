@@ -11,83 +11,19 @@ public class MySudokuModel implements SudokuModel {
 	private MySudokuModel solvedSudoku;
 	private int counter = 0;
 	private boolean isSolvable = false;
+	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	
 	//  Instance variables related to the history function
 	private LinkedList<Move> moveHistory= new LinkedList<Move>();
-	private int moveHistoryIndex = 0; private int moveHistoryBound = 0;
-	
-	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-	
-	
-	
+	private int moveHistoryIndex = 0;
+	private int moveHistoryBound = 0;	
 	
 	public MySudokuModel() {
 		clear(); // Initiate to 0 explicitly
 	}
 	
 	public MySudokuModel(MySudokuModel s) {
-		rows = s.rows;
-		cols = s.cols;
-		for (int i = 0; i < rows; i++) {
-			for (int j = 0; j < cols; j++) {
-				sudoku[i][j] = s.sudoku[i][j];
-			}
-		}
-	}
-	private class Move {
-		int row, col, val, oldVal;
-		public Move(int r, int c, int v, int oldV) {
-			row = r; col = c; val = v; oldVal = oldV;
-		}
-	}
-	
-	private void clearHistory() {
-		moveHistoryIndex = 0;
-		moveHistoryBound = 0;
-		moveHistory = new LinkedList<Move>();
-	}
-	
-	private void addHistory(Move m) {
-		if (moveHistoryIndex == moveHistory.size()) {
-			moveHistory.add(m);
-		}
-		else 
-			moveHistory.set(moveHistoryIndex, m);
-		moveHistoryIndex++;
-	}
-	
-	public void makeSolvable() {
-		moveHistoryBound--;
-		while(!isSolvable())
-			undo();
-			moveHistoryBound--;
-	}
-	
-	public void undo() {
-		if (moveHistoryIndex > 0) {
-		Move last = moveHistory.get(moveHistoryIndex-1);
-		sudoku[last.row][last.col] = last.oldVal;
-		moveHistoryIndex--;
-		pcs.fireIndexedPropertyChange("undo", (last.row*9+last.col), last.val, last.oldVal);
-		}
-	}
-	public void redo() {
-		if (moveHistoryIndex < moveHistoryBound) {
-		Move last = moveHistory.get(moveHistoryIndex);
-		sudoku[last.row][last.col] = last.val;
-		moveHistoryIndex++;
-		pcs.fireIndexedPropertyChange("undo", (last.row*9+last.col), last.oldVal, last.val);
-		}
-	}
-	private int[][] cpyArr (int[][] m) {
-		int rows = m.length; int cols = m[0].length;
-		int[][] res = new int[rows][cols];
-		for (int i = 0; i< rows; i++) {
-			for(int j = 0; j<cols; j++) {
-				res[i][j] = m[i][j];
-			}
-		}
-		return res;
+		sudoku = cpyArr(s.sudoku);
 	}
 	
 	public void setBoard(int row, int col, int val) {
@@ -296,5 +232,61 @@ public class MySudokuModel implements SudokuModel {
 	
 	public void removePropertyChangeListener(PropertyChangeListener l) {
 		pcs.removePropertyChangeListener(l);		
+	}
+	
+	private class Move {
+		int row, col, val, oldVal;
+		public Move(int r, int c, int v, int oldV) {
+			row = r; col = c; val = v; oldVal = oldV;
+		}
+	}
+	
+	private void clearHistory() {
+		moveHistoryIndex = 0;
+		moveHistoryBound = 0;
+		moveHistory = new LinkedList<Move>();
+	}
+	
+	private void addHistory(Move m) {
+		if (moveHistoryIndex == moveHistory.size()) {
+			moveHistory.add(m);
+		}
+		else 
+			moveHistory.set(moveHistoryIndex, m);
+		moveHistoryIndex++;
+	}
+	
+	public void makeSolvable() {
+		moveHistoryBound--;
+		while(!isSolvable())
+			undo();
+			moveHistoryBound--;
+	}
+	
+	public void undo() {
+		if (moveHistoryIndex > 0) {
+		Move last = moveHistory.get(moveHistoryIndex-1);
+		sudoku[last.row][last.col] = last.oldVal;
+		moveHistoryIndex--;
+		pcs.fireIndexedPropertyChange("undo", (last.row*9+last.col), last.val, last.oldVal);
+		}
+	}
+	public void redo() {
+		if (moveHistoryIndex < moveHistoryBound) {
+		Move last = moveHistory.get(moveHistoryIndex);
+		sudoku[last.row][last.col] = last.val;
+		moveHistoryIndex++;
+		pcs.fireIndexedPropertyChange("undo", (last.row*9+last.col), last.oldVal, last.val);
+		}
+	}
+	private int[][] cpyArr (int[][] m) {
+		int rows = m.length; int cols = m[0].length;
+		int[][] res = new int[rows][cols];
+		for (int i = 0; i< rows; i++) {
+			for(int j = 0; j<cols; j++) {
+				res[i][j] = m[i][j];
+			}
+		}
+		return res;
 	}
 }
