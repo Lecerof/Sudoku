@@ -78,7 +78,7 @@ public class MySudokuModel implements SudokuModel {
 				}
 			}
 		}
-		clearHistory();
+		clearHistory(); // since i use setboard i need to clear the history
 		pcs.firePropertyChange("setBoardStr", oldsud, sudoku);
 	}
 	
@@ -417,9 +417,10 @@ public class MySudokuModel implements SudokuModel {
 	public void undo() {
 		if (moveHistoryIndex > 0) {
 		Move last = moveHistory.get(moveHistoryIndex-1);
-		sudoku[last.row][last.col] = last.oldVal;
-		moveHistoryIndex--;
-		pcs.fireIndexedPropertyChange("undo", (last.row*9+last.col), last.val, last.oldVal);
+		sudoku[last.row][last.col] = last.oldVal; //no need to use setboard
+		moveHistoryIndex--;						  //since all values are safe
+		pcs.fireIndexedPropertyChange("undo", (last.row*9+last.col),
+												last.val, last.oldVal);
 		}
 	}
 	
