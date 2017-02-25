@@ -10,7 +10,6 @@ public class MySudokuModel implements SudokuModel {
 	private int[][] sudoku = new int[rows][cols];
 	private MySudokuModel solvedSudoku;
 	private int counter = 0;
-	private boolean isSolvable = false;
 	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	
 	//  Instance variables related to the history function
@@ -92,7 +91,6 @@ public class MySudokuModel implements SudokuModel {
 	public void clear() {
 		int[][] oldsud = new int[rows][cols];
 		counter = 0;
-		isSolvable = false;
 		for (int i = 0; i < rows; i++) {
 			for (int j = 0; j < cols; j++) {
 				oldsud[i][j] = sudoku[i][j];
@@ -162,10 +160,16 @@ public class MySudokuModel implements SudokuModel {
 		}
 	}
 	
+	/**
+	 * solveHelper
+	 * uses backtracking to generate solutions. If there are more
+	 * than one solution it will find them aswell and increase the
+	 * counter.
+	 * @return boolean true if it manage to find a solution
+	 */
 	private boolean solveHelper(){
 		int[] index = this.findLowestSumIndex();
 		if ((index[0] == -1 || index[1] == -1)) {
-			isSolvable = true;
 			counter++;
 			solvedSudoku = new MySudokuModel(this);			
 		}
@@ -177,12 +181,18 @@ public class MySudokuModel implements SudokuModel {
 				this.sudoku[index[0]][index[1]] = 0;
 			}
 		} }
-		return isSolvable;
+		return counter > 0;
 	}
 	
-	public int[] findLowestSumIndex() { // if no squares left returns -1,-1
+	/**
+	 * findLowestSumIndex
+	 * finds the index with the least amounts of free squares
+	 * in the row, column and block.
+	 * @return index an array with two elements: [row, column]
+	 */
+	private int[] findLowestSumIndex() {
 		int[] index = {-1,-1}; 	//row, col
-		int bestSum = 28;		//all free + 1
+		int bestSum = 28;		//all free
 		for (int i = 0; i<9; i++ ) {
 			for (int j = 0; j<9; j++) {
 				if (this.sudoku[i][j] == 0) {
@@ -198,12 +208,22 @@ public class MySudokuModel implements SudokuModel {
 		return index;
 	}
 	
+	/**
+	 * isSolvable
+	 * copies the model and solves the copy
+	 * @return boolean true if there is a solutions to the current
+	 * state of the model
+	 */
 	public boolean isSolvable() {
 		MySudokuModel a = new MySudokuModel(this);
 		return a.solve();
 	}
 
-	
+	/**
+	 * isUnique
+	 * calculates if the sudoku has a unique solution
+	 * @return boolean true if it has a unique solution
+	 */
 	public boolean isUnique() {
 		counter = 0;
 		boolean unique = true;
@@ -213,6 +233,12 @@ public class MySudokuModel implements SudokuModel {
 		return unique;
 	}
 	
+	/**
+	 * uniqueSolutions
+	 * calculates the amount of unique solutions the
+	 * current status of the sudoku puzzle has
+	 * @return counter, an integer value of the number of solutions
+	 */
 	public int uniqueSolutions() {
 		counter = 0;
 		solveHelper();
@@ -234,6 +260,12 @@ public class MySudokuModel implements SudokuModel {
 		pcs.removePropertyChangeListener(l);		
 	}
 	
+	/**
+	 * class Move
+	 * related to the history queue
+	 * stores the previous value, the indexes and the new value of
+	 * an value in the sudoku puzzle.
+	 */
 	private class Move {
 		int row, col, val, oldVal;
 		public Move(int r, int c, int v, int oldV) {
@@ -241,12 +273,23 @@ public class MySudokuModel implements SudokuModel {
 		}
 	}
 	
+	/**
+	 * clearHistory
+	 * clears the history queue and variables connected to it
+	 */
 	private void clearHistory() {
 		moveHistoryIndex = 0;
 		moveHistoryBound = 0;
 		moveHistory = new LinkedList<Move>();
 	}
 	
+	/**
+	 * 
+	 * @param m Move object that is to be put in the queue. If the
+	 * index is equal to the size, then you will add it to the list.
+	 * if it is not then it will write over whatever was in the list
+	 * at that index.
+	 */
 	private void addHistory(Move m) {
 		if (moveHistoryIndex == moveHistory.size()) {
 			moveHistory.add(m);
@@ -256,6 +299,11 @@ public class MySudokuModel implements SudokuModel {
 		moveHistoryIndex++;
 	}
 	
+	/**
+	 * makeSolvable
+	 * removes all inputs made after and including the one that is not part
+	 * of at least one solution
+	 */
 	public void makeSolvable() {
 		moveHistoryBound--;
 		while(!isSolvable())
@@ -263,6 +311,11 @@ public class MySudokuModel implements SudokuModel {
 			moveHistoryBound--;
 	}
 	
+	/**
+	 * undo
+	 * changes the sudoku instance variable to the stage before the current input
+	 * in the history queue
+	 */
 	public void undo() {
 		if (moveHistoryIndex > 0) {
 		Move last = moveHistory.get(moveHistoryIndex-1);
@@ -271,14 +324,25 @@ public class MySudokuModel implements SudokuModel {
 		pcs.fireIndexedPropertyChange("undo", (last.row*9+last.col), last.val, last.oldVal);
 		}
 	}
+	
+	/**
+	 * redo
+	 * reverts whatever undo did
+	 */
 	public void redo() {
 		if (moveHistoryIndex < moveHistoryBound) {
 		Move last = moveHistory.get(moveHistoryIndex);
 		sudoku[last.row][last.col] = last.val;
 		moveHistoryIndex++;
-		pcs.fireIndexedPropertyChange("undo", (last.row*9+last.col), last.oldVal, last.val);
+		pcs.fireIndexedPropertyChange("redo", (last.row*9+last.col), last.oldVal, last.val);
 		}
 	}
+	
+	/**
+	 * cpyArr is a method for copying an m by n matrix
+	 * @param m an m by n matrix
+	 * @return reference to the copied matrix
+	 */
 	private int[][] cpyArr (int[][] m) {
 		int rows = m.length; int cols = m[0].length;
 		int[][] res = new int[rows][cols];
