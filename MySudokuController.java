@@ -43,6 +43,7 @@ public class MySudokuController extends JPanel
 		JMenuItem testMenuItem = new JMenuItem("Test");
 		JMenuItem makeSolvableMenuItem = new JMenuItem("Make Solvable");
 		JMenuItem generateMenuItem = new JMenuItem("Generate new");
+		JMenuItem removeWrongMenuItem = new JMenuItem("Remove Wrong");
 		
 		// Add all the buttons to respective component
 		add(undo);
@@ -61,6 +62,7 @@ public class MySudokuController extends JPanel
 		actionMenu.add(solveMenuItem);
 		actionMenu.add(testMenuItem);
 		actionMenu.add(makeSolvableMenuItem);
+		actionMenu.add(removeWrongMenuItem);
 
 		// Add all actionlisteners to the buttons/menus
 		undo.addActionListener(e -> ((MySudokuModel) model).undo());
@@ -80,6 +82,7 @@ public class MySudokuController extends JPanel
 		clearMenuItem.addActionListener(e ->  {	model.clear();
 												setActionEnabled(false);
 												});
+		removeWrongMenuItem.addActionListener(e -> ((MySudokuModel) model).removeWrong());
 
 		
 		
@@ -204,6 +207,10 @@ public class MySudokuController extends JPanel
 	private void generate() {
 		JOptionPane.showMessageDialog(MySudokuController.this,
 				"TODO, sorry");
+	}
+	
+	private void removeWrong() {
+		
 	}
 
 }

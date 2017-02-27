@@ -15,6 +15,7 @@ public class MySudokuModel implements SudokuModel {
 	private int cols=9;
 	private int[][] sudoku = new int[rows][cols];
 	private MySudokuModel solvedSudoku;
+	//private boolean isSolved = false;
 	private int counter = 0;
 	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	
@@ -196,7 +197,7 @@ public class MySudokuModel implements SudokuModel {
 	 */
 	private int[] extractCol(int col) {
 		if (col < 0 || col >= cols) return null;
-		int[] tmp = new int[rows];
+		int[] tmp = new int[rows];		
 		for(int i = 0; i < 9; i++) {
 			tmp[i] = sudoku[i][col];
 		}
@@ -278,13 +279,14 @@ public class MySudokuModel implements SudokuModel {
 			solvedSudoku = new MySudokuModel(this);			
 		}
 		else {
-		for(int i=1; i<10;i++) {
-			if(isLegal(index[0], index[1], i)) {
-				this.sudoku[index[0]][index[1]] = i;
-				this.solveHelper();
-				this.sudoku[index[0]][index[1]] = 0;
+			for(int i=1; i<10;i++) {
+				if(isLegal(index[0], index[1], i)) {
+					this.sudoku[index[0]][index[1]] = i;
+					this.solveHelper();
+					this.sudoku[index[0]][index[1]] = 0;
+				}
 			}
-		} }
+		}
 		return counter > 0;
 	}
 	
@@ -454,5 +456,14 @@ public class MySudokuModel implements SudokuModel {
 			res[i] = Arrays.copyOf(m[i], m[i].length);
 		}
 		return res;
+	}
+	
+	public void removeWrong() {
+		for (int i = 0; i < rows; i++){
+			for (int j = 0; j < cols; j++) {
+				if (sudoku[i][j] != solvedSudoku.sudoku[i][j])
+					setBoard(i, j, 0);
+			}
+		}
 	}
 }
