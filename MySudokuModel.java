@@ -1,7 +1,12 @@
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.IntStream;
 
 /**
  * Class MySudokuModel
@@ -255,7 +260,7 @@ public class MySudokuModel implements SudokuModel {
 	 */
 	public boolean solve() {
 		counter = 0;
-		if (solveHelper()) {
+		if (solveHelper(1)) {
 			int[][] oldsud = cpyArr(sudoku);
 			sudoku = solvedSudoku.sudoku;
 			pcs.firePropertyChange("setBoardStr", oldsud, sudoku);
@@ -272,7 +277,7 @@ public class MySudokuModel implements SudokuModel {
 	 * counter.
 	 * @return boolean true if it manage to find a solution
 	 */
-	private boolean solveHelper(){
+	private boolean solveHelper(int counterLimit){
 		int[] index = this.findLowestSumIndex();
 		if ((index[0] == -1 || index[1] == -1)) {
 			counter++;
@@ -280,9 +285,9 @@ public class MySudokuModel implements SudokuModel {
 		}
 		else {
 			for(int i=1; i<10;i++) {
-				if(isLegal(index[0], index[1], i)) {
+				if(isLegal(index[0], index[1], i) && (counter <= counterLimit)) {
 					this.sudoku[index[0]][index[1]] = i;
-					this.solveHelper();
+					this.solveHelper(counterLimit);
 					this.sudoku[index[0]][index[1]] = 0;
 				}
 			}
@@ -333,7 +338,7 @@ public class MySudokuModel implements SudokuModel {
 	public boolean isUnique() {
 		counter = 0;
 		boolean unique = true;
-		if (solveHelper()) {
+		if (solveHelper(2)) {
 			unique = (counter > 1) ? false : true;
 		}
 		return unique;
@@ -347,7 +352,7 @@ public class MySudokuModel implements SudokuModel {
 	 */
 	public int uniqueSolutions() {
 		counter = 0;
-		solveHelper();
+		solveHelper(10);
 		return counter;
 	}
 	
@@ -465,5 +470,43 @@ public class MySudokuModel implements SudokuModel {
 					setBoard(i, j, 0);
 			}
 		}
+	}
+	
+	public void generate() {
+		clear();
+		int counter = 0;
+		while(counter<10) {
+			try {
+			int row = (int) (Math.random()*9);
+			int col = (int) (Math.random()*9);
+			int value = (int) (Math.random()*9+1);
+			setBoard(row, col, value);
+			counter++;
+			} catch (Exception e) {}
+		}
+		
+		int[] range = randperm(IntStream.iterate(0, n -> n + 1).limit(81).toArray());
+		for (int e : range) {
+			int tmp = sudoku[e/9][e%9];
+			sudoku[e/9][e%9] = 0;
+			if (!isUnique()){
+				sudoku[e/9][e%9] = tmp;
+			}
+			
+		}
+		setBoard(this.getBoard());
+	}
+	
+	private int[] randperm(int[] a) {
+		int index, temp;
+		Random random = new Random();
+	    for (int i = a.length - 1; i > 0; i--)
+	    {
+	        index = random.nextInt(i + 1);
+	        temp = a[index];
+	        a[index] = a[i];
+	        a[i] = temp;
+	    }
+	    return a;
 	}
 }

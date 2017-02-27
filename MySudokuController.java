@@ -154,13 +154,14 @@ public class MySudokuController extends JPanel
 					 model.clear();
 					 model.setBoard(everything);
 					 setActionEnabled(true);
-					 if (!model.isSolvable()) {
+					 int solutions = ((MySudokuModel) model).uniqueSolutions();
+					 if (solutions == 0) {
 						 model.clear();
 						 setActionEnabled(false);
 						 JOptionPane.showMessageDialog(MySudokuController.this,
 								 						"No solutions");
 					 }
-					 if (!model.isUnique())
+					 if (solutions>1)
 						 JOptionPane.showMessageDialog(MySudokuController.this,
 								 						"No unique solution");
 					 
@@ -205,8 +206,9 @@ public class MySudokuController extends JPanel
 	}
 	
 	private void generate() {
-		JOptionPane.showMessageDialog(MySudokuController.this,
-				"TODO, sorry");
+		model.clear();
+		((MySudokuModel) model).generate();
+		setActionEnabled(true);
 	}
 	
 	private void removeWrong() {
