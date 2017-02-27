@@ -1,5 +1,6 @@
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Arrays;
 import java.util.LinkedList;
 
 /**
@@ -448,12 +449,9 @@ public class MySudokuModel implements SudokuModel {
 	 * @return reference to the copied matrix
 	 */
 	private int[][] cpyArr (int[][] m) {
-		int rows = m.length; int cols = m[0].length;
-		int[][] res = new int[rows][cols];
-		for (int i = 0; i< rows; i++) {
-			for(int j = 0; j<cols; j++) {
-				res[i][j] = m[i][j];
-			}
+		int[][] res = new int[m.length][];
+		for (int i = 0; i<m.length; i++) {
+			res[i] = Arrays.copyOf(m[i], m[i].length);
 		}
 		return res;
 	}
