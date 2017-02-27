@@ -338,8 +338,9 @@ public class MySudokuModel implements SudokuModel {
 	public boolean isUnique() {
 		counter = 0;
 		boolean unique = true;
-		if (solveHelper(2)) {
-			unique = (counter > 1) ? false : true;
+		MySudokuModel a = new MySudokuModel(this);
+		if (a.solveHelper(2)) {
+			unique = (a.counter > 1) ? false : true;
 		}
 		return unique;
 	}
@@ -463,7 +464,9 @@ public class MySudokuModel implements SudokuModel {
 		return res;
 	}
 	
+	
 	public void removeWrong() {
+		
 		for (int i = 0; i < rows; i++){
 			for (int j = 0; j < cols; j++) {
 				if (sudoku[i][j] != solvedSudoku.sudoku[i][j])
@@ -475,7 +478,7 @@ public class MySudokuModel implements SudokuModel {
 	public void generate() {
 		clear();
 		int counter = 0;
-		while(counter<10) {
+		while(counter<9) {
 			try {
 			int row = (int) (Math.random()*9);
 			int col = (int) (Math.random()*9);
@@ -484,7 +487,7 @@ public class MySudokuModel implements SudokuModel {
 			counter++;
 			} catch (Exception e) {}
 		}
-		
+		solve();
 		int[] range = randperm(IntStream.iterate(0, n -> n + 1).limit(81).toArray());
 		for (int e : range) {
 			int tmp = sudoku[e/9][e%9];
@@ -494,6 +497,8 @@ public class MySudokuModel implements SudokuModel {
 			}
 			
 		}
+		System.out.println(this.getBoard());
+		System.out.println(solvedSudoku.getBoard());
 		setBoard(this.getBoard());
 	}
 	
