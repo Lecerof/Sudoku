@@ -24,6 +24,8 @@ public class MySudokuModel implements SudokuModel {
 	private int counter = 0;
 	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 	
+	public enum Difficulty {EASY, HARD};
+	
 	//  Instance variables related to the history function
 	private LinkedList<Move> moveHistory= new LinkedList<Move>();
 	private int moveHistoryIndex = 0;
@@ -486,7 +488,7 @@ public class MySudokuModel implements SudokuModel {
 	 * generates a random sudoku and sets the board to that sudoku.
 	 * The solution will be unique.
 	 */
-	public void generate() {
+	public void generate(Difficulty a) {
 		clear();
 		int counter = 0;
 		while(counter<9) {
@@ -502,6 +504,7 @@ public class MySudokuModel implements SudokuModel {
 		// Generate a random permutation of a [0..81] array
 		int[] range = randperm(IntStream.iterate(0, n -> n + 1).
 											limit(81).toArray());
+		
 		for (int e : range) {
 			int tmp = sudoku[e/9][e%9];
 			sudoku[e/9][e%9] = 0;
@@ -511,6 +514,24 @@ public class MySudokuModel implements SudokuModel {
 			
 		}
 		isUnique(); // restore the solution
+		int filledSquares = 81;
+		for (int[] e : sudoku) {
+			filledSquares -= sumEmptyArray(e);
+		}
+		if ((a == Difficulty.HARD) && filledSquares > 25) {
+			generate(Difficulty.HARD);
+		}
+		else if (a==Difficulty.EASY) {
+			while (filledSquares <34) {
+				int row = (int) (Math.random()*9);
+				int col = (int) (Math.random()*9);
+				if (sudoku[row][col] == 0) {
+					sudoku[row][col] = solvedSudoku[row][col];
+					filledSquares++;
+				}
+			}
+			
+		}
 		setBoard(this.getBoard());
 	}
 	

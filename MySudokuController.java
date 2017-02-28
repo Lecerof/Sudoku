@@ -34,6 +34,7 @@ public class MySudokuController extends JPanel
 		
 		JMenu fileMenu = new JMenu("File");
 		JMenu actionMenu = new JMenu("Action");
+		JMenu generateMenu = new JMenu("Generate new");
 		
 		JMenuItem openMenuItem = new JMenuItem("New/Open");
 		JMenuItem clearMenuItem = new JMenuItem("Clear");
@@ -42,8 +43,10 @@ public class MySudokuController extends JPanel
 		JMenuItem solveMenuItem = new JMenuItem("Solve");
 		JMenuItem testMenuItem = new JMenuItem("Test");
 		JMenuItem makeSolvableMenuItem = new JMenuItem("Make Solvable");
-		JMenuItem generateMenuItem = new JMenuItem("Generate new");
 		JMenuItem removeWrongMenuItem = new JMenuItem("Remove Wrong");
+		JMenuItem easy = new JMenuItem("Easy");
+		JMenuItem hard = new JMenuItem("Hard");
+		
 		
 		// Add all the buttons to respective component
 		add(undo);
@@ -54,7 +57,7 @@ public class MySudokuController extends JPanel
 		actionMenu.setEnabled(false); // nothing to solve if nothing is loaded
 
 		fileMenu.add(openMenuItem);
-		fileMenu.add(generateMenuItem);
+		fileMenu.add(generateMenu);
 		fileMenu.add(clearMenuItem);
 		fileMenu.add(saveMenuItem);
 		fileMenu.add(exitMenuItem);
@@ -63,13 +66,19 @@ public class MySudokuController extends JPanel
 		actionMenu.add(testMenuItem);
 		actionMenu.add(makeSolvableMenuItem);
 		actionMenu.add(removeWrongMenuItem);
+		
+		generateMenu.add(easy);
+		generateMenu.add(hard);
+		
+		
 
 		// Add all actionlisteners to the buttons/menus
 		undo.addActionListener(e -> ((MySudokuModel) model).undo());
 		redo.addActionListener(e -> ((MySudokuModel) model).redo());
 		
 		openMenuItem.addActionListener(e -> openFromFile());
-		generateMenuItem.addActionListener(e -> generate());
+		easy.addActionListener(e -> generate(MySudokuModel.Difficulty.EASY));
+		hard.addActionListener(e -> generate(MySudokuModel.Difficulty.HARD));
 		saveMenuItem.addActionListener(e -> save());
 		exitMenuItem.addActionListener(e -> System.exit(0));
 		
@@ -205,9 +214,9 @@ public class MySudokuController extends JPanel
         }
 	}
 	
-	private void generate() {
+	private void generate(MySudokuModel.Difficulty a) {
 		model.clear();
-		((MySudokuModel) model).generate();
+		((MySudokuModel) model).generate(a);
 		setActionEnabled(true);
 	}
 	
