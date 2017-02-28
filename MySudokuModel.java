@@ -19,7 +19,7 @@ public class MySudokuModel implements SudokuModel {
 	private int rows=9;
 	private int cols=9;
 	private int[][] sudoku = new int[rows][cols];
-	private MySudokuModel solvedSudoku;
+	private int[][] solvedSudoku;
 	//private boolean isSolved = false;
 	private int counter = 0;
 	private final PropertyChangeSupport pcs = new PropertyChangeSupport(this);
@@ -262,7 +262,7 @@ public class MySudokuModel implements SudokuModel {
 		counter = 0;
 		if (solveHelper(1)) {
 			int[][] oldsud = cpyArr(sudoku);
-			sudoku = solvedSudoku.sudoku;
+			sudoku = cpyArr(solvedSudoku);
 			pcs.firePropertyChange("setBoardStr", oldsud, sudoku);
 			return true;
 		} else {
@@ -281,7 +281,12 @@ public class MySudokuModel implements SudokuModel {
 		int[] index = this.findLowestSumIndex();
 		if ((index[0] == -1 || index[1] == -1)) {
 			counter++;
-			solvedSudoku = new MySudokuModel(this);			
+			if (counter == 1) {
+				//System.out.println("counter is one and this is the solution");
+				solvedSudoku = cpyArr(sudoku);
+				//System.out.println(solvedSudoku.getBoard());
+			}
+			
 		}
 		else {
 			for(int i=1; i<10;i++) {
@@ -338,9 +343,8 @@ public class MySudokuModel implements SudokuModel {
 	public boolean isUnique() {
 		counter = 0;
 		boolean unique = true;
-		MySudokuModel a = new MySudokuModel(this);
-		if (a.solveHelper(2)) {
-			unique = (a.counter > 1) ? false : true;
+		if (solveHelper(2)) {
+			unique = (counter > 1) ? false : true;
 		}
 		return unique;
 	}
@@ -464,17 +468,24 @@ public class MySudokuModel implements SudokuModel {
 		return res;
 	}
 	
-	
+	/**
+	 * removeWrong
+	 * removes all numbers not part of the solution
+	 */
 	public void removeWrong() {
-		
 		for (int i = 0; i < rows; i++){
 			for (int j = 0; j < cols; j++) {
-				if (sudoku[i][j] != solvedSudoku.sudoku[i][j])
+				if (sudoku[i][j] != solvedSudoku[i][j])
 					setBoard(i, j, 0);
 			}
 		}
 	}
 	
+	/**
+	 * generate
+	 * generates a random sudoku and sets the board to that sudoku.
+	 * The solution will be unique.
+	 */
 	public void generate() {
 		clear();
 		int counter = 0;
@@ -488,7 +499,9 @@ public class MySudokuModel implements SudokuModel {
 			} catch (Exception e) {}
 		}
 		solve();
-		int[] range = randperm(IntStream.iterate(0, n -> n + 1).limit(81).toArray());
+		// Generate a random permutation of a [0..81] array
+		int[] range = randperm(IntStream.iterate(0, n -> n + 1).
+											limit(81).toArray());
 		for (int e : range) {
 			int tmp = sudoku[e/9][e%9];
 			sudoku[e/9][e%9] = 0;
@@ -497,11 +510,16 @@ public class MySudokuModel implements SudokuModel {
 			}
 			
 		}
-		System.out.println(this.getBoard());
-		System.out.println(solvedSudoku.getBoard());
+		isUnique(); // restore the solution
 		setBoard(this.getBoard());
 	}
 	
+	/**
+	 * randperm
+	 * random permutation of an integer array using Fisher–Yates shuffle
+	 * @param a the array you want to permute
+	 * @return shuffled a
+	 */
 	private int[] randperm(int[] a) {
 		int index, temp;
 		Random random = new Random();
