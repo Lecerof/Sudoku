@@ -83,10 +83,17 @@ public class MySudokuController extends JPanel
 		exitMenuItem.addActionListener(e -> System.exit(0));
 		
 		solveMenuItem.addActionListener(e -> model.solve());
-		testMenuItem.addActionListener(e -> JOptionPane.showMessageDialog(MySudokuController.this,
-												"From this point the sudoku has " + 
-												((MySudokuModel) model).uniqueSolutions() +
-												" solutions"));
+		testMenuItem.addActionListener(e -> {
+			int nbrsolutions = ((MySudokuModel) model).uniqueSolutions();
+			JOptionPane.showMessageDialog(MySudokuController.this,
+					"From this point the sudoku has " +
+					((nbrsolutions > 10) ? "more than 10" :  nbrsolutions) +
+					" solutions");
+		});
+			
+			
+			
+			
 		makeSolvableMenuItem.addActionListener(e -> ((MySudokuModel) model).makeSolvable());
 		clearMenuItem.addActionListener(e ->  {	model.clear();
 												setActionEnabled(false);
@@ -218,10 +225,6 @@ public class MySudokuController extends JPanel
 		model.clear();
 		((MySudokuModel) model).generate(a);
 		setActionEnabled(true);
-	}
-	
-	private void removeWrong() {
-		
 	}
 
 }
