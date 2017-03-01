@@ -275,7 +275,7 @@ public class MySudokuModel implements SudokuModel {
 	/**
 	 * solveHelper
 	 * uses backtracking to generate solutions. If there are more
-	 * than one solution it will find them aswell and increase the
+	 * than one solution it will find them as well and increase the
 	 * counter.
 	 * @return boolean true if it manage to find a solution
 	 */
@@ -284,9 +284,7 @@ public class MySudokuModel implements SudokuModel {
 		if ((index[0] == -1 || index[1] == -1)) {
 			counter++;
 			if (counter == 1) {
-				//System.out.println("counter is one and this is the solution");
 				solvedSudoku = cpyArr(sudoku);
-				//System.out.println(solvedSudoku.getBoard());
 			}
 			
 		}
@@ -486,7 +484,11 @@ public class MySudokuModel implements SudokuModel {
 	/**
 	 * generate
 	 * generates a random sudoku and sets the board to that sudoku.
-	 * The solution will be unique.
+	 * The solution will be unique. If hard difficulty is chosen
+	 * it will generate a sudoku with at most 24 filled squares
+	 * If easy difficulty is chosen then it will generate a sudoku
+	 * with 33 squares filled.
+	 * @param a the difficulty to be used
 	 */
 	public void generate(Difficulty a) {
 		clear();
@@ -552,5 +554,11 @@ public class MySudokuModel implements SudokuModel {
 	        a[i] = temp;
 	    }
 	    return a;
+	}
+	
+	public void reset() {
+		while (moveHistoryIndex > 0) {
+			undo();
+		}
 	}
 }

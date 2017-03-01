@@ -46,6 +46,7 @@ public class MySudokuController extends JPanel
 		JMenuItem removeWrongMenuItem = new JMenuItem("Remove Wrong");
 		JMenuItem easy = new JMenuItem("Easy");
 		JMenuItem hard = new JMenuItem("Hard");
+		JMenuItem resetMenuItem = new JMenuItem("Reset");
 		
 		
 		// Add all the buttons to respective component
@@ -66,10 +67,10 @@ public class MySudokuController extends JPanel
 		actionMenu.add(testMenuItem);
 		actionMenu.add(makeSolvableMenuItem);
 		actionMenu.add(removeWrongMenuItem);
+		actionMenu.add(resetMenuItem);
 		
 		generateMenu.add(easy);
 		generateMenu.add(hard);
-		
 		
 
 		// Add all actionlisteners to the buttons/menus
@@ -81,8 +82,15 @@ public class MySudokuController extends JPanel
 		hard.addActionListener(e -> generate(MySudokuModel.Difficulty.HARD));
 		saveMenuItem.addActionListener(e -> save());
 		exitMenuItem.addActionListener(e -> System.exit(0));
-		
 		solveMenuItem.addActionListener(e -> model.solve());
+		removeWrongMenuItem.addActionListener(e -> ((MySudokuModel) model).removeWrong());
+		makeSolvableMenuItem.addActionListener(e -> ((MySudokuModel) model).makeSolvable());
+		resetMenuItem.addActionListener(e -> ((MySudokuModel) model).reset() );
+	
+		clearMenuItem.addActionListener(e ->  {	model.clear();
+												setActionEnabled(false);
+												});
+
 		testMenuItem.addActionListener(e -> {
 			int nbrsolutions = ((MySudokuModel) model).uniqueSolutions();
 			JOptionPane.showMessageDialog(MySudokuController.this,
@@ -90,17 +98,6 @@ public class MySudokuController extends JPanel
 					((nbrsolutions > 10) ? "more than 10" :  nbrsolutions) +
 					" solutions");
 		});
-			
-			
-			
-			
-		makeSolvableMenuItem.addActionListener(e -> ((MySudokuModel) model).makeSolvable());
-		clearMenuItem.addActionListener(e ->  {	model.clear();
-												setActionEnabled(false);
-												});
-		removeWrongMenuItem.addActionListener(e -> ((MySudokuModel) model).removeWrong());
-
-		
 		
 		
 		
