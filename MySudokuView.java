@@ -21,6 +21,7 @@ public class MySudokuView extends JPanel
 	Square[][] playField = new Square[9][9];
 	SudokuModel model;
 	SudokuController controller;
+	boolean checkedFlag;
 	
 	/**
 	 * constructor for MySudokuView
@@ -106,7 +107,19 @@ public class MySudokuView extends JPanel
 	 */
 	public void propertyChange(PropertyChangeEvent evt) {
 		
+		
+		
 		if (evt instanceof IndexedPropertyChangeEvent) {
+			if (checkedFlag) {
+				checkedFlag = false;
+				for (int i = 0; i<9; i++) {
+					for (int j = 0; j < 9; j++) {
+						if(playField[i][j].isEnabled())
+							playField[i][j].setBackground(Color.WHITE);
+					}
+				}
+				
+			}
 			// What happends if it is of indexed type.
 			int index = ((IndexedPropertyChangeEvent) evt).getIndex();
 			int col = index%9;
@@ -116,7 +129,7 @@ public class MySudokuView extends JPanel
 			   it will set the Square to null. */
 			playField[row][col].setText( (value>0) ? Integer.toString(value) : null );
 			
-		} else {
+		} else if (!(evt.getPropertyName() == "checkWrong")){
 			// what happends if it is of nonindexed type, ie. clear() and setBoard(String a)
 			for (int i = 0; i<9; i++) {
 				for (int j = 0; j < 9; j++) {
@@ -134,6 +147,20 @@ public class MySudokuView extends JPanel
 						ref.setBackground(Color.white);
 						
 					}
+				}
+			}
+		} else if((evt.getPropertyName() == "checkWrong")) {
+			checkedFlag = true;
+			int[][] sudoku = (int[][]) evt.getOldValue();
+			int[][] solution = (int[][]) evt.getNewValue();
+			for (int i = 0; i < sudoku.length ; i++) {
+				for (int j = 0; j < sudoku[i].length; j++) {
+					Square block = playField[i][j];
+					if(sudoku[i][j] != solution[i][j]) {
+						block.setBackground(new Color(255, 147, 147));
+						
+					} else if (block.isEnabled())
+						block.setBackground(new Color(147, 255, 147));	
 				}
 			}
 		}

@@ -561,4 +561,8 @@ public class MySudokuModel implements SudokuModel {
 			undo();
 		}
 	}
+	
+	public void checkWrong() {
+		pcs.firePropertyChange("checkWrong", sudoku, solvedSudoku);
+	}
 }
