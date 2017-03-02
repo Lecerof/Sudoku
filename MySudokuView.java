@@ -4,6 +4,8 @@ import java.beans.*;
 import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
+import javax.swing.text.DefaultEditorKit;
+
 import java.awt.event.*;
 
 /**
@@ -43,6 +45,8 @@ public class MySudokuView extends JPanel
 					int row = i+3*(k/3);
 					int col = j+3*(k%3);
 					Square s = new Square(row, col);
+					Action beep = s.getActionMap().get(DefaultEditorKit.deletePrevCharAction);
+					beep.setEnabled(false);
 					s.addKeyListener(this);
 					s.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.RAISED));
 					s.setDisabledTextColor(Color.BLACK);
@@ -146,6 +150,10 @@ public class MySudokuView extends JPanel
 			Square a = (Square) KeyboardFocusManager.getCurrentKeyboardFocusManager().getFocusOwner();
 			moveFromTo(e, a).grabFocus();
 		}
+		else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
+			Square a = (Square) e.getSource();
+			controller.input(a.getRow(), a.getCol(), '0');
+		}
 	}
 	
 	/**
@@ -181,12 +189,15 @@ public class MySudokuView extends JPanel
 
 	@Override
 	public void keyReleased(KeyEvent e) {
+		
+		//System.out.println((e.isActionKey()));
+		
 		Square a  = (Square) e.getSource();
 		int row = a.getRow(); int col = a.getCol();
 		if (controller.input(row, col, e.getKeyChar())) {
 			int value = model.getBoard(row,col);
 			playField[row][col].setText( (value>0) ? Integer.toString(value) : null );
-		} else if (!e.isActionKey()){ // actionKeys does not count as input
+		} else if (!e.isActionKey() && !(e.getKeyCode() == KeyEvent.VK_BACK_SPACE)){ // actionKeys does not count as input
 			playField[row][col].setText("");
 			Toolkit.getDefaultToolkit().beep();
 		}
