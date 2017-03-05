@@ -1,5 +1,6 @@
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.List;
 import java.beans.*;
 import java.awt.*;
 import javax.swing.*;
@@ -68,7 +69,7 @@ public class MySudokuView extends JPanel
 	 * with two instance variables for wich row and column the
 	 * field represents
 	 */
-	private class Square extends JTextField {
+	public class Square extends JTextField {
 		private int row,col;
 		
 		public Square() {}
@@ -106,11 +107,17 @@ public class MySudokuView extends JPanel
 	 * @param evt the PropertyChangeEvent may be of indexed type or of nonindexed type.
 	 */
 	public void propertyChange(PropertyChangeEvent evt) {
+		String event = evt.getPropertyName();
+		//findLowestPossible
 		
-		
-		
-		if (evt instanceof IndexedPropertyChangeEvent) {
-			if (checkedFlag) {
+		if ((evt instanceof IndexedPropertyChangeEvent)) {
+			int index = ((IndexedPropertyChangeEvent) evt).getIndex();
+			int col = index%9;
+			int row = index/9;
+			
+			
+			
+				if (checkedFlag) {
 				checkedFlag = false;
 				for (int i = 0; i<9; i++) {
 					for (int j = 0; j < 9; j++) {
@@ -119,17 +126,17 @@ public class MySudokuView extends JPanel
 					}
 				}
 				
-			}
+			
 			// What happends if it is of indexed type.
-			int index = ((IndexedPropertyChangeEvent) evt).getIndex();
-			int col = index%9;
-			int row = index/9;
 			int value = model.getBoard(row,col);
 			/* if the value is greater than 0 it will set the Square to the value. Else
 			   it will set the Square to null. */
 			playField[row][col].setText( (value>0) ? Integer.toString(value) : null );
+			playField[row][col].setBackground(Color.WHITE);
 			
-		} else if (!(evt.getPropertyName() == "checkWrong")){
+		}}
+		
+		else if ((event == "clear") || (event == "setBoardStr")){
 			// what happends if it is of nonindexed type, ie. clear() and setBoard(String a)
 			for (int i = 0; i<9; i++) {
 				for (int j = 0; j < 9; j++) {
@@ -149,7 +156,7 @@ public class MySudokuView extends JPanel
 					}
 				}
 			}
-		} else if((evt.getPropertyName() == "checkWrong")) {
+		} else if((event == "checkWrong")) {
 			checkedFlag = true;
 			int[][] sudoku = (int[][]) evt.getOldValue();
 			int[][] solution = (int[][]) evt.getNewValue();
@@ -163,7 +170,15 @@ public class MySudokuView extends JPanel
 						block.setBackground(new Color(147, 255, 147));	
 				}
 			}
-		}
+		} else if (event == "betterHintFunction") {
+			checkedFlag = true;
+			List<int[]> a = (List<int[]>) evt.getNewValue();
+			int i = 0;
+			while(i<a.size()) {
+				int[] index = a.get(i);
+				playField[index[0]][index[1]].setBackground(Color.BLUE);
+				i++;
+		}}
 		
 	}
 
@@ -180,6 +195,7 @@ public class MySudokuView extends JPanel
 		else if (e.getKeyCode() == KeyEvent.VK_BACK_SPACE) {
 			Square a = (Square) e.getSource();
 			controller.input(a.getRow(), a.getCol(), '0');
+			a.setText("");
 		}
 	}
 	
@@ -216,16 +232,15 @@ public class MySudokuView extends JPanel
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		
-		//System.out.println((e.isActionKey()));
-		
 		Square a  = (Square) e.getSource();
 		int row = a.getRow(); int col = a.getCol();
 		if (controller.input(row, col, e.getKeyChar())) {
 			int value = model.getBoard(row,col);
-			playField[row][col].setText( (value>0) ? Integer.toString(value) : null );
+			a.setText( (value>0) ? Integer.toString(value) : null );
 		} else if (!e.isActionKey() && !(e.getKeyCode() == KeyEvent.VK_BACK_SPACE)){ // actionKeys does not count as input
-			playField[row][col].setText("");
+			int value = model.getBoard(row,col);
+			String settext = (value>0) ? Integer.toString(value) : "";
+			a.setText(settext);
 			Toolkit.getDefaultToolkit().beep();
 		}
 	}

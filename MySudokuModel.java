@@ -307,14 +307,13 @@ public class MySudokuModel implements SudokuModel {
 	 * @return index an array with two elements: [row, column]
 	 */
 	private int[] findLowestSumIndex() {
-		int[] index = {-1,-1}; 	//row, col
-		int bestSum = 28;		//all free
+		int[] index = {-1,-1, 28}; 	//row, col
 		for (int i = 0; i<9; i++ ) {
 			for (int j = 0; j<9; j++) {
 				if (this.sudoku[i][j] == 0) {
-					int sum = this.sumEmpty(i,j);
-					if (sum<bestSum) {
-						bestSum = sum;
+					int sum = sumEmpty(i,j);
+					if (sum<index[2]) {
+						index[2] = sum;
 						index[0] =i;
 						index[1] =j;
 					}
@@ -322,6 +321,24 @@ public class MySudokuModel implements SudokuModel {
 			}
 		}
 		return index;
+	}
+	
+	private List<int[]> findAllLowestSumIndex() {
+		int[] index = findLowestSumIndex();
+		List<int[]> indexes = new LinkedList<int[]>();
+		indexes.add(index);
+		for (int i = 0; i<9; i++ ) {
+			for (int j = 0; j<9; j++) {
+				if (this.sudoku[i][j] == 0) {
+					int sum = this.sumEmpty(i,j);
+					if (sum==index[2]) {
+						int[] a = {i, j, sum};
+						indexes.add(a);
+					}
+				}
+			}
+		}
+		return indexes;
 	}
 	
 	/**
@@ -565,4 +582,51 @@ public class MySudokuModel implements SudokuModel {
 	public void checkWrong() {
 		pcs.firePropertyChange("checkWrong", sudoku, solvedSudoku);
 	}
-}
+	public void findLowestPossible() {
+		List<int[]> a = findAllLowestSumIndex();
+		pcs.firePropertyChange("findLowest", null, a);
+	}
+	
+	public void betterHintFunction() {
+		List<int[]> a = new LinkedList<int[]>();
+		int metric = 9;
+		for (int i = 0; i <rows; i++) {
+			for (int j = 0; j<cols; j++) {
+				if (sudoku[i][j] == 0) {
+					int tmp = tryInBlock(i, j, solvedSudoku[i][j]);
+					if (tmp < metric) {
+						metric = tmp;
+						int[] index = {i, j, tmp};
+						a = new LinkedList<int[]>();
+						a.add(index);
+					} else if(metric == tmp) {
+						int[] index = {i, j, tmp};
+						a.add(index);
+					}
+				}
+			}
+		}
+		pcs.firePropertyChange("betterHintFunction", null, a);
+	}
+		
+	private int tryInBlock(int row, int col, int value) {
+		int metric = 0;
+		for (int i = 0; i<3; i++) {
+			for (int j = 0; j < 3; j++) {
+				int x = (row/3)*3+i;
+				int y = (col/3)*3+j;
+				if (sudoku[x][y] == 0)
+					metric = (isLegal(x,y, value)) ? metric+1 : metric;
+			}
+		}
+		return metric;
+	}
+		/*
+		 * for each square in the sudoku == 0
+		 * take the value from the solution
+		 * check if it is possible to place.
+		 * take the best measurement and put
+		 * in list.
+		 */
+	}
+

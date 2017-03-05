@@ -48,6 +48,7 @@ public class MySudokuController extends JPanel
 		JMenuItem hard = new JMenuItem("Hard");
 		JMenuItem resetMenuItem = new JMenuItem("Reset");
 		JMenuItem compareSolution = new JMenuItem("Compare solution");
+		JMenuItem findLowest = new JMenuItem("Hint");
 		
 		
 		// Add all the buttons to respective component
@@ -70,6 +71,7 @@ public class MySudokuController extends JPanel
 		actionMenu.add(removeWrongMenuItem);
 		actionMenu.add(resetMenuItem);
 		actionMenu.add(compareSolution);
+		actionMenu.add(findLowest);
 		
 		generateMenu.add(easy);
 		generateMenu.add(hard);
@@ -90,6 +92,7 @@ public class MySudokuController extends JPanel
 		removeWrongMenuItem.addActionListener(e -> ((MySudokuModel) model).removeWrong());
 		makeSolvableMenuItem.addActionListener(e -> ((MySudokuModel) model).makeSolvable());
 		resetMenuItem.addActionListener(e -> ((MySudokuModel) model).reset() );
+		findLowest.addActionListener(e -> ((MySudokuModel) model).betterHintFunction() );
 	
 		clearMenuItem.addActionListener(e ->  {	model.clear();
 												setActionEnabled(false);
