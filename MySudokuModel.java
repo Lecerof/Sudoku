@@ -590,17 +590,22 @@ public class MySudokuModel implements SudokuModel {
 	public void betterHintFunction() {
 		List<int[]> a = new LinkedList<int[]>();
 		int metric = 9;
+		//int metricRowCol = 18;
 		for (int i = 0; i <rows; i++) {
 			for (int j = 0; j<cols; j++) {
 				if (sudoku[i][j] == 0) {
-					int tmp = tryInBlock(i, j, solvedSudoku[i][j]);
+					int tmpBlock = tryInBlock(i, j, solvedSudoku[i][j]);
+					int tmpRow = tryInRow(i, j, solvedSudoku[i][j]);
+					int tmpCol = tryInCol(i, j, solvedSudoku[i][j]);
+					int tmp = Math.min(tmpCol, Math.min(tmpBlock, tmpRow));
+					
 					if (tmp < metric) {
 						metric = tmp;
-						int[] index = {i, j, tmp};
+						int[] index = {i, j, tmp, metric};
 						a = new LinkedList<int[]>();
 						a.add(index);
 					} else if(metric == tmp) {
-						int[] index = {i, j, tmp};
+						int[] index = {i, j, tmp, metric};
 						a.add(index);
 					}
 				}
@@ -620,6 +625,25 @@ public class MySudokuModel implements SudokuModel {
 			}
 		}
 		return metric;
+	}
+	private int tryInRow(int row, int col, int value) {
+		int metric = 0;
+		for (int i = 0; i<rows; i++) {
+			if(sudoku[row][i] == 0) {
+				metric = (isLegal(row, i, value)) ? metric+1:metric;
+			}
+		}
+		return metric;
+	}
+	private int tryInCol(int row, int col, int value) {
+		int metric = 0;
+		// ((3/3)*3+3+i)%9
+		for (int i = 0; i<cols; i++) {
+			if(sudoku[i][col] == 0) {
+				metric = (isLegal(i, col, value)) ? metric+1:metric;
+			}
+		}
+		return metric; 
 	}
 		/*
 		 * for each square in the sudoku == 0

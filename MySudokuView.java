@@ -177,6 +177,7 @@ public class MySudokuView extends JPanel
 			while(i<a.size()) {
 				int[] index = a.get(i);
 				playField[index[0]][index[1]].setBackground(Color.BLUE);
+				System.out.println(index[3]);
 				i++;
 		}}
 		
