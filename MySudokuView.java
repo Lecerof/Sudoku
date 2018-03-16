@@ -117,7 +117,7 @@ public class MySudokuView extends JPanel
 			
 			
 			
-				if (checkedFlag) {
+			if (checkedFlag) {
 				checkedFlag = false;
 				for (int i = 0; i<9; i++) {
 					for (int j = 0; j < 9; j++) {
@@ -125,6 +125,7 @@ public class MySudokuView extends JPanel
 							playField[i][j].setBackground(Color.WHITE);
 					}
 				}
+			}
 				
 			
 			// What happends if it is of indexed type.
