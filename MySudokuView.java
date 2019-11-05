@@ -135,7 +135,7 @@ public class MySudokuView extends JPanel
 			playField[row][col].setText( (value>0) ? Integer.toString(value) : null );
 			playField[row][col].setBackground(Color.WHITE);
 			
-		}}
+		}
 		
 		else if ((event == "clear") || (event == "setBoardStr")){
 			// what happends if it is of nonindexed type, ie. clear() and setBoard(String a)
